@@ -30,3 +30,11 @@ POST:
 Cara Post pakai EF disini: (harus ada 2 function ini)
 1. _context.Stocks.Add("Data JSON dari pengguna untuk kita simpan")  // nambah data ne itu
 2. _context.Stocks.SaveChanges(); // Untuk masukin dan update di Database kita (dah masuk ke dtabase)
+
+
+----------------------------------->
+
+ASYNC:
+-Dijadiin async controller mu, each database seperti _context jadi await
+(?)
+kenapa harus di wrap di Task<..>????????????

@@ -8,36 +8,33 @@ using api.Dtos.Stock;
 using api.Mappers;
 using api.Models; // Import Stock dari Models
 using Microsoft.AspNetCore.Http.HttpResults; // Tipe hasil (ga terlalu dipake)
-using Microsoft.AspNetCore.Mvc; // Untuk API control mu seperti HttpGet
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // Untuk API control mu seperti HttpGet
 
 namespace api.Controllers
 {
-    [Route("api/stock")] // EndPoint masuk ke api/stock
-    [ApiController] // Fitur dasar
-    public class StockController : ControllerBase // StockController: Nama Controller // ControlBase: turunan dari Controlbase untuk Web API
+    [Route("api/stock")] 
+    [ApiController] 
+    public class StockController : ControllerBase 
     {
-        private readonly ApplicationDBContext _context; // "_context" adalah variable atau field digunakan dalam seluruh method di controller
-        // ApplicatonDBContext: Nama kelas untuk mengatur koneksi dan operasi database
-        // _context: field internal untuk simpan instance (?)
-        public StockController(ApplicationDBContext context) // Constructor
-        // Constructor menerima APplicationDBContext yg di inject oleh dependency injection
+        private readonly ApplicationDBContext _context; 
+        public StockController(ApplicationDBContext context) 
         {
-            _context = context; // simpan field context
+            _context = context; 
         }
 
         [HttpGet] // get (Read) ke api/stock
-        public IActionResult GetAll() // IACTIONRESULT: interface yang memungkinkan kamu mengembalikan nilai Ok() atau NotFOund() Error seperti di ID bawah setelah ini
+        public async Task<IActionResult> GetAll() // Jadikan async yaa disini(yanh beruhubungan ke DB)
         {
-            var stocks = _context.Stocks.ToList()
-            .Select(s => s.ToStockDto()); // ambil semua data dari tabel stocks dan convert ke list
-            // Bro disini ada .Select itu nanti yang akan memberi repsonse dari semua select dari Dtos
+            var stocks = await _context.Stocks.ToListAsync(); // ada "await" disana untuk nandai disini asyn ya
+            var stockDto = stocks.Select(s => s.ToStockDto()); // disini juga jadi dipisah ke dto sendiri biar ga bareng asynv
             return Ok(stocks);
         }
 
         [HttpGet("{id}")] // + id
-        public IActionResult GetById([FromRoute] int id) // FromRoute: mengambil nilai ID dari URL
+        public async Task<IActionResult> GetById([FromRoute] int id) // jadi async juga, dan jangan lupa di wrap di Task<..>
         {
-            var stock = _context.Stocks.Find(id); // Find = built in function to search // search by PK
+            var stock = await _context.Stocks.FindAsync(id); // Find = built in function to search // search by PK || karena ini DB buat async jadi + await dan + FindAsync
 
             if (stock == null)
             {
@@ -50,20 +47,21 @@ namespace api.Controllers
         // POST kitaaaa: ------------------------->
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateStockRequestDto stockDto)
+        public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto)
         {
             var stockModel = stockDto.ToStockFromCreateDTO();
-            _context.Stocks.Add(stockModel);
-            _context.SaveChanges();
+            await _context.Stocks.AddAsync(stockModel); // async
+            await _context.SaveChangesAsync(); // async
+            // semua function nya nanti jadi tambah async belakang nya dan itu built in allhamdulilah
             return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
         }
 
         // Put (Update) --------------->
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
         {
-            var stockModel = _context.Stocks.FirstOrDefault(x => x.Id == id); // searching function untuk pastiike data yang mau di update exist ga
+            var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id); // searching function untuk pastiike data yang mau di update exist ga
 
             if (stockModel == null)
             {
@@ -77,23 +75,23 @@ namespace api.Controllers
             stockModel.Industry = updateDto.Industry;
             stockModel.MarketCap = updateDto.MarketCap;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(); // asy c
             return Ok(stockModel.ToStockDto());
         }
 
         // Delete ---------------->
         [HttpDelete]
         [Route("{id}")]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var stockModel = _context.Stocks.FirstOrDefault(x => x.Id == id);
+            var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);// async
 
             if(stockModel == null)
             {
                 return NotFound();
             }
 
-            _context.Stocks.Remove(stockModel);
+            _context.Stocks.Remove(stockModel); // tidak async karena gatau, REMOVE gapernah pake async
             _context.SaveChanges();
             return NoContent(); // ini adalah status Sukses untuk delete ya gaes
         }
