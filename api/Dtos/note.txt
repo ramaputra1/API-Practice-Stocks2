@@ -1,0 +1,12 @@
+Dtos:
+1. Untuk trim dan edit RESPONSE dan REQUEST http
+2. Tidak berisi logic
+3. Untuk trim dan modif data object saja
+
+Contoh:
+Ketika User memasukkan Username dan Password nanti kita akan response sesuatu kan, nah kita gamungkin response
+Username + PASSWORD nya, itu bahaya.
+Makanya terkadang kita mau edit cuma mengembalikan username aja, itu kenapa kita pakai Dtos untuk mengakali itu.
+
+More:
+-Mungkin kita akan buat banyak Dtos (foldernya juga), tiap object punya Dtos nya dewe2

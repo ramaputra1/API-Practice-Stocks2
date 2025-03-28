@@ -1,0 +1,3 @@
+Entity = Model
+
+Model ini entity atau object yang mau disimpen2 nanti ada Stock dan comment nih

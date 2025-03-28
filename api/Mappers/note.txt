@@ -1,0 +1,19 @@
+Pasangan sejati Dtos.
+
+Mapper: Tools yang digunakan untuk mengedit dengan memetakan data dari satu object ke object lain.
+-Seperti tujuan kita tadi kan untuk ubah dari Model -> Dtos
+-Jadi ya, kita perlu Mapper ini untuk trim dan edit itu tadi dari (Model ke Dto)
+
+Kenapa butuh Mapper:
+Jadi, Model dan DTO itu berbeda kelas, kit agabisa langsung pindah gitu aja.
+
+
+
+INTI:
+* Mapper adalah bentuk kedua dari model tapi dengan value2 yang mau kita display nanti contohnya untuk response api nya.
+
+
+Cara kerja gimana?
+1. Buat Dtos dan bikin apa yang kamu mau buat
+2. ke mappers untuk beri value apa aja yang mau di display
+3. Ke Controller lalu modif response nya dengan "Select. ..." untuk kembalikan apa yang sudah kamu buat di Dto dan Mapper tadi

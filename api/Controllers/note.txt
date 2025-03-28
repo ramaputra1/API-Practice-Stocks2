@@ -1,0 +1,32 @@
+Controller:
+Untuk semua Endpoint kamu disini, CRUD kamu disini
+
+/* 
+Jadi, controller itu untuk
+1. control semua endpoint api nya.
+2. Menangani Request
+-Kembalikan Response 404 & 200
+*/
+
+
+--------------------------
+
+Injection:
+Penting, dalam Controller agar kita gaperlu buat object sendiri.
+
+Tinggal minta ASP buatin itu untuk kita (dengan memberi dependency di program.cs kita)
+
+✅ Dependency Injection (DI) = cara memberi object (dependency) dari luar, bukan membuat di dalam class.
+
+ASP.NET Core otomatis kasih object lewat constructor
+
+Kamu tinggal daftarkan dependency-nya di Program.cs
+
+Ini bikin kode kamu rapih, scalable, dan testable
+
+
+--------------------------
+POST:
+Cara Post pakai EF disini: (harus ada 2 function ini)
+1. _context.Stocks.Add("Data JSON dari pengguna untuk kita simpan")  // nambah data ne itu
+2. _context.Stocks.SaveChanges(); // Untuk masukin dan update di Database kita (dah masuk ke dtabase)

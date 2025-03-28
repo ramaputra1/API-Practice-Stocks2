@@ -1,0 +1,9 @@
+Ini Migrations dibuat otomatis saat anu Migrate itu:
+1.dotnet ef migrations add init - Membuat satu set file migration baru di folder Migrations/ || init di sini adalah nama migration, bebas kamu kasih apa aja
+
+
+
+Files:
+1. 20250324045706_init.cs 💡 File utama migration, Script migrasi (up/down) – instruksi bikin atau ubah tabel
+2. 20250324045706_init.Designer.cs 💡 Auto-generated designer file -  tracking dan scaffolding
+3. ApplicationDBContextModelSnapshot.cs 💡 Snapshot model terkini - Snapshot model terkini untuk tracking perubahan di masa depan
