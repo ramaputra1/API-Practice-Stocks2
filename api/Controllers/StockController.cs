@@ -38,7 +38,7 @@ namespace api.Controllers
         [HttpGet("{id}")] // + id
         public async Task<IActionResult> GetById([FromRoute] int id) // jadi async juga, dan jangan lupa di wrap di Task<..>
         {
-            var stock = await _context.Stocks.FindAsync(id); // Find = built in function to search // search by PK || karena ini DB buat async jadi + await dan + FindAsync
+            var stock = await _stockRepo.GetByIdAsync(id); // Find = built in function to search // search by PK || karena ini DB buat async jadi + await dan + FindAsync
 
             if (stock == null)
             {
@@ -54,9 +54,11 @@ namespace api.Controllers
         public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto)
         {
             var stockModel = stockDto.ToStockFromCreateDTO();
-            await _context.Stocks.AddAsync(stockModel); // async
-            await _context.SaveChangesAsync(); // async
-            // semua function nya nanti jadi tambah async belakang nya dan itu built in allhamdulilah
+            // gadipake lagi: (diganti sama repo)
+            // await _context.Stocks.AddAsync(stockModel); // async
+            // await _context.SaveChangesAsync(); // async
+            // // semua function nya nanti jadi tambah async belakang nya dan itu built in allhamdulilah
+            await _stockRepo.CreateAsync(stockModel);
             return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
         }
 
@@ -65,21 +67,21 @@ namespace api.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
         {
-            var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id); // searching function untuk pastiike data yang mau di update exist ga
-
+            // var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id); // diganti repo semua kan yg DB _context
+            var stockModel = await _stockRepo.UpdateAsync(id, updateDto);
             if (stockModel == null)
             {
                 return NotFound();
             }
-            // belum pasti ini apa, mungkin apa yang diupdate untuk masuk ke database
-            stockModel.Symbol = updateDto.Symbol;
-            stockModel.CompanyName = updateDto.CompanyName;
-            stockModel.Purchase = updateDto.Purchase;
-            stockModel.LastDiv = updateDto.LastDiv;
-            stockModel.Industry = updateDto.Industry;
-            stockModel.MarketCap = updateDto.MarketCap;
+            // diganti repo
+            // stockModel.Symbol = updateDto.Symbol;
+            // stockModel.CompanyName = updateDto.CompanyName;
+            // stockModel.Purchase = updateDto.Purchase;
+            // stockModel.LastDiv = updateDto.LastDiv;
+            // stockModel.Industry = updateDto.Industry;
+            // stockModel.MarketCap = updateDto.MarketCap;
 
-            await _context.SaveChangesAsync(); // asy c
+            // await _context.SaveChangesAsync(); // asy c
             return Ok(stockModel.ToStockDto());
         }
 
@@ -88,15 +90,16 @@ namespace api.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);// async
+            // var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);// async
+            var stockModel = await _stockRepo.DeleteAsync(id);
 
             if(stockModel == null)
             {
                 return NotFound();
             }
 
-            _context.Stocks.Remove(stockModel); // tidak async karena gatau, REMOVE gapernah pake async
-            _context.SaveChanges();
+            // _context.Stocks.Remove(stockModel); 
+            // _context.SaveChanges();
             return NoContent(); // ini adalah status Sukses untuk delete ya gaes
         }
     }
