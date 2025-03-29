@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks; // Untuk Async kamu
 using api.Data; // Untuk import DBContext
 using api.Dtos.Stock;
+using api.Interfaces;
 using api.Mappers;
 using api.Models; // Import Stock dari Models
 using Microsoft.AspNetCore.Http.HttpResults; // Tipe hasil (ga terlalu dipake)
@@ -18,15 +19,18 @@ namespace api.Controllers
     public class StockController : ControllerBase 
     {
         private readonly ApplicationDBContext _context; 
-        public StockController(ApplicationDBContext context) 
+        private readonly IStockRepository _stockRepo; // bro _ nandakan apa?
+        public StockController(ApplicationDBContext context, IStockRepository stockRepo) 
         {
+            _stockRepo = stockRepo;
             _context = context; 
         }
 
         [HttpGet] // get (Read) ke api/stock
         public async Task<IActionResult> GetAll() // Jadikan async yaa disini(yanh beruhubungan ke DB)
         {
-            var stocks = await _context.Stocks.ToListAsync(); // ada "await" disana untuk nandai disini asyn ya
+            // var stocks = await _context.Stocks.ToListAsync();  // eyo kita ganti ini jadi ngambil dari Repo ya
+            var stocks = await _stockRepo.GetAllAsync(); // baca line atas
             var stockDto = stocks.Select(s => s.ToStockDto()); // disini juga jadi dipisah ke dto sendiri biar ga bareng asynv
             return Ok(stocks);
         }
